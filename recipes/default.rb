@@ -13,7 +13,8 @@ uservars = node['cpio-downloads-server']['users']
 repovars = node['cpio-downloads-server']['repositories']
 dirvars  = node['cpio-downloads-server']['directories']
 temvars  = node['cpio-downloads-server']['templates']
-fwvars   = node['firewalld']['firewalld_ports']
+fwsvars  = node['firewalld']['firewalld_services']
+fwpvars  = node['firewalld']['firewalld_ports']
 
 # --- Set SELinux to Disabled, Sonarr does not support it.
 
@@ -53,12 +54,12 @@ node['cpio-downloads-server']['packages'].each do |package_name|
   end
 end
 
-# --- Update Shell from Bash to Fish on my_user
+# --- Update Shell from Bash to Fish on Root User
 
-execute 'Use Fish instead of Bash for Login User' do
-  command "chsh -s /usr/bin/fish #{node['cpio-downloads-server']['my_username']}"
+execute 'Use Fish instead of Bash for Root User' do
+  command "chsh -s /usr/bin/fish root"
   action :run
-  only_if { node['cpio-downloads-server']['replace_bash'] }
+  only_if { node['fish']['replace_bash'] }
 end
 
 # --- Create Directory Structures
@@ -95,12 +96,32 @@ service "firewalld" do
   action [:disable, :stop]
 end
 
-fwvars.each do |fwconf|
-  firewalld_port fwconf[:fwport] do
+fwpvars.each do |fwpconf|
+  firewalld_port fwpconf[:fwport] do
     action :add
-    zone fwconf[:fwzone]
+    zone fwpconf[:fwzone]
     only_if { node['firewalld']['enable_firewalld'] }
   end
+end
+
+fwsvars.each do |fwsconf|
+  firewalld_service fwsconf[:fwservice] do
+    action :add
+    zone fwsconf[:fwzone]
+    only_if { node['firewalld']['enable_firewalld'] }
+  end
+end
+
+# --- Enable or Disable SMB
+
+service "smb" do
+  only_if { node['smb']['enable_smb'] }
+  action [:enable, :start]
+end
+
+service "smb" do
+  not_if { node['smb']['enable_smb'] }
+  action [:disable, :stop]
 end
 
 # --- Install NZBGet
@@ -119,12 +140,6 @@ end
 
 file '/tmp/nzbget-latest-bin-linux.run' do
   action :delete
-end
-
-execute 'Move NZBGet Config File' do
-  command "mv #{node['cpio-downloads-server']['apps_homedirectory']}/nzbget/nzbget.conf #{node['cpio-downloads-server']['apps_homedirectory']}/.config/nzbget/nzbget.conf"
-  action :run
-  only_if { File.exist?("#{node['cpio-downloads-server']['apps_homedirectory']}/nzbget/nzbget.conf") }
 end
 
 # --- Install Sonarr

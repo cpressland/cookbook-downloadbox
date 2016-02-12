@@ -1,7 +1,75 @@
+[AutoRun]
+enabled=false
+program=
+
 [LegalNotice]
 Accepted=true
 
+[Network]
+Cookies=@Invalid()
+
 [Preferences]
+Advanced\AnonymousMode=false
+Advanced\IncludeOverhead=false
+Bittorrent\DHT=true
+Bittorrent\Encryption=0
+Bittorrent\LSD=true
+Bittorrent\MaxConnecs=500
+Bittorrent\MaxConnecsPerTorrent=100
+Bittorrent\MaxRatio=-1
+Bittorrent\MaxRatioAction=@Variant(\0\0\0\x7f\0\0\0\xfMaxRatioAction\0\0\0\0\0)
+Bittorrent\MaxUploads=-1
+Bittorrent\MaxUploadsPerTorrent=-1
+Bittorrent\PeX=true
+Bittorrent\uTP=true
+Bittorrent\uTP_rate_limited=true
+Connection\GlobalDLLimit=-1
+Connection\GlobalDLLimitAlt=10
+Connection\GlobalUPLimit=-1
+Connection\GlobalUPLimitAlt=10
+Connection\PortRangeMin=<%= node['qbittorrent']['torrentport'] %>
+Connection\Proxy\Authentication=false
+Connection\Proxy\IP=0.0.0.0
+Connection\Proxy\Password=
+Connection\Proxy\Port=8080
+Connection\Proxy\Username=
+Connection\ProxyForce=true
+Connection\ProxyPeerConnections=false
+Connection\ProxyType=-1
+Connection\UPnP=false
+Downloads\FinishedTorrentExportDir=<%= node['cpio-downloads-server']['dl_directory'] %>/Torrents/CompleteTorrentFiles
+Downloads\PreAllocation=true
+Downloads\SavePath=<%= node['cpio-downloads-server']['dl_directory'] %>/Torrents/Complete
+Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\x1\0\0\0\x32\0/\0\x64\0o\0w\0n\0l\0o\0\x61\0\x64\0s\0/\0T\0o\0r\0r\0\x65\0n\0t\0s\0/\0W\0\x61\0t\0\x63\0h\0\0\0\x2\0\0\0\x1)
+Downloads\TempPath=<%= node['cpio-downloads-server']['dl_directory'] %>/Torrents/Incomplete
+Downloads\TempPathEnabled=true
+Downloads\TorrentExportDir=<%= node['cpio-downloads-server']['dl_directory'] %>/Torrents/IncompleteTorrentFiles
+Downloads\UseIncompleteExtension=false
+DynDNS\DomainName=changeme.dyndns.org
+DynDNS\Enabled=false
+DynDNS\Password=
+DynDNS\Service=0
+DynDNS\Username=
 General\Locale=en_GB
-Connection\PortRangeMin=<%= node['qbittorrent']['port'] %>
-WebUI\Port=8080
+General\UseRandomPort=false
+IPFilter\Enabled=false
+IPFilter\File=
+IPFilter\FilterTracker=false
+MailNotification\email=
+MailNotification\enabled=false
+MailNotification\password=
+MailNotification\req_auth=false
+MailNotification\req_ssl=false
+MailNotification\smtp_server=smtp.changeme.com
+MailNotification\username=
+Queueing\IgnoreSlowTorrents=true
+Queueing\MaxActiveDownloads=500
+Queueing\MaxActiveTorrents=1000
+Queueing\MaxActiveUploads=500
+Queueing\QueueingEnabled=false
+Scheduler\Enabled=false
+WebUI\HTTPS\Enabled=false
+WebUI\LocalHostAuth=true
+WebUI\Port=<%= node['qbittorrent']['webui'] %>
+WebUI\UseUPnP=true
+WebUI\Username=admin

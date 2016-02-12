@@ -25,8 +25,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   # If this value is a shorthand to a box in Vagrant Cloud then
   # config.vm.box_url doesn't need to be specified.
-  # config.vm.box = 'bento/debian-8.2'
-  # config.vm.box = 'bento/ubuntu-15.04'
   config.vm.box = 'bento/centos-7.2'
 
   config.vm.provider :virtualbox do |vb|
@@ -38,7 +36,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
-  config.vm.network :private_network, type: 'dhcp'
+  # config.vm.network :private_network, type: 'dhcp'
+  config.vm.network :public_network, type: 'dhcp'
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
