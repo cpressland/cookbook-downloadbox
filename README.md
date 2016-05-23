@@ -2,13 +2,17 @@
 
 Cookbook for deploying NZBGet, qBittorrent, Sonarr and CouchPotato onto a CentOS Server.
 
-I made this primarily to learn ways of using Chef in a homelab environment and apply said techniques to my day job.
-
-I run this on a [Online.net Dedibox XC 2015](https://www.online.net/en/dedicated-server/dedibox-xc) running ESXi 5.5.0 with a VyOS (for Firewall, Routing and Site-to-Site VPN) VM and a CentOS 7.2 VM, seems to work pretty well.
-
 ## Supported Platforms
 
 * CentOS 7.x
+
+## Usage
+
+Deployment on a CentOS Server can be automated by calling the following script:
+
+```
+curl -L https://raw.githubusercontent.com/cpressland/cpio-downloads-server/master/install.sh | bash
+```
 
 ## Attributes
 
@@ -93,26 +97,13 @@ I run this on a [Online.net Dedibox XC 2015](https://www.online.net/en/dedicated
   </tr>
 </table>
 
-## Usage
-
-### cpio-downloads-server::default
-
-Include `cpio-downloads-server` in your node's `run_list`:
-
-```json
-{
-  "run_list": [
-    "recipe[cpio-downloads-server::default]"
-  ]
-}
-```
-
 ## Todo List
 
 * Add Support for Optional Nginx Reverse Proxy
 * Add Tmux and Tmuxinator with a view of all logs
 * Add Additional Attributes for customising NZBGet, qBittorrent, Sonarr & CouchPotato
 * Continue refining code
+* Switch to Alpine Linux based Docker containers.
 
 ## License and Authors
 

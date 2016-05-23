@@ -25,3 +25,7 @@ Updated Fish Attribute from ['cpio-downloads-server'] to ['fish']
 # 1.0.4
 Updated Readme.md file
 Updated qBittorrent Config File to support version 3.3.3.
+
+# 1.0.5
+Moved auto deployment script (install.sh) into main repo.
+Cleaned up metadata.rb & README.md
