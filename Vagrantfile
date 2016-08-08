@@ -9,9 +9,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.hostname = 'downloadbox-vagrant'
 
-  if Vagrant.has_plugin?("vagrant-omnibus")
-    config.omnibus.chef_version = '12.7.2'
-  end
+  # if Vagrant.has_plugin?("vagrant-omnibus")
+  #   config.omnibus.chef_version = '12.7.2'
+  # end
 
   config.vm.box = 'bento/centos-7.2'
 
@@ -21,20 +21,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network :public_network, type: 'dhcp'
 
-  config.berkshelf.enabled = true
+  # config.berkshelf.enabled = true
 
-  config.vm.provision :chef_solo do |chef|
-    chef.json = {
-      "downloadbox" => {
-        "share_ip" => "10.0.50.10",
-        "share_name" => "shared",
-        "tvpath" => "/media/shared/px01/tv",
-        "moviepath" => "/media/shared/px01/movies"
-      }
-    }
-
-    chef.run_list = [
-      'recipe[downloadbox::default]'
-    ]
-  end
+  # config.vm.provision :chef_solo do |chef|
+  #   chef.json = {
+  #     "downloadbox" => {
+  #       "share_ip" => "10.0.50.10",
+  #       "share_name" => "shared",
+  #       "tvpath" => "/media/shared/px01/tv",
+  #       "moviepath" => "/media/shared/px01/movies"
+  #     }
+  #   }
+  #
+  #   chef.run_list = [
+  #     'recipe[downloadbox::default]'
+  #   ]
+  # end
 end
