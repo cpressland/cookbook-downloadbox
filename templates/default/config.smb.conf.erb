@@ -1,19 +1,25 @@
 [global]
    workgroup = WORKGROUP
-   server string = Downloads Server
+   server string = Download Box
    security = user
    map to guest = Bad User
    log file = /var/log/samba/%m.log
    max log size = 50
    dns proxy = no
-   guest account = <%= node['cpio-downloads-server']['apps_username'] %>
+   guest account = apps
    load printers = no
    printing = bsd
    printcap name = /dev/null
    disable spoolss = yes
 
 [downloads]
-   path = <%= node['cpio-downloads-server']['dl_directory'] %>
+   path = <%= node['downloadbox']['basedir_downloads'] %>
    public = yes
    only guest = yes
    writable = yes
+
+[config]
+  path = <%= node['downloadbox']['basedir_downloads'] %>
+  public = yes
+  only guest = yes
+  writable = yes

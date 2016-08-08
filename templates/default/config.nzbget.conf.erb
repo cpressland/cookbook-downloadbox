@@ -1,10 +1,10 @@
 ##############################################################################
 ### PATHS                                                                  ###
 
-MainDir=<%= node['cpio-downloads-server']['dl_directory'] %>/NZBs
-DestDir=<%= node['cpio-downloads-server']['dl_directory'] %>/NZBs/Complete
-InterDir=<%= node['cpio-downloads-server']['dl_directory'] %>/NZBs/Incomplete
-NzbDir=<%= node['cpio-downloads-server']['dl_directory'] %>/NZBs/Watch
+MainDir=<%= node['downloadbox']['basedir_downloads'] %>/nzbget
+DestDir=<%= node['downloadbox']['basedir_downloads'] %>/nzbget/Complete
+InterDir=<%= node['downloadbox']['basedir_downloads'] %>/nzbget/Incomplete
+NzbDir=<%= node['downloadbox']['basedir_downloads'] %>/nzbget/Watch
 QueueDir=${AppDir}/data/queue
 TempDir=${AppDir}/data/tmp
 WebDir=${AppDir}/webui
@@ -35,7 +35,7 @@ Server1.Retention=0
 ### SECURITY                                                               ###
 
 ControlIP=0.0.0.0
-ControlPort=<%= node['nzbget']['webui'] %>
+ControlPort=6789
 ControlUsername=nzbget
 ControlPassword=tegbzn6789
 RestrictedUsername=

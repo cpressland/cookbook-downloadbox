@@ -1,6 +1,6 @@
 # cpio-downloads-server - Cookbook
 
-Cookbook for deploying NZBGet, qBittorrent, Sonarr and CouchPotato onto a CentOS Server.
+Cookbook for deploying NZBGet, Sonarr and CouchPotato onto a CentOS Server.
 
 ## Supported Platforms
 

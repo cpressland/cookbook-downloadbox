@@ -29,3 +29,9 @@ Updated qBittorrent Config File to support version 3.3.3.
 # 1.0.5
 Moved auto deployment script (install.sh) into main repo.
 Cleaned up metadata.rb & README.md
+
+# 2.0.0
+
+Switched everything to Docker based containers
+Removed qBittorrent, for now.
+Added Nginx Reverse Proxy

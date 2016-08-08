@@ -1,1 +1,0 @@
-shared  -fstype=cifs,guest,rw,uid=<%= node['cpio-downloads-server']['apps_username'] %>,gid=<%= node['cpio-downloads-server']['apps_username'] %> ://<%= node['cpio-downloads-server']['share_ip'] %>/<%= node['cpio-downloads-server']['share_name'] %>

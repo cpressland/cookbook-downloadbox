@@ -1,0 +1,16 @@
+[Unit]
+Description=Automounts filesystems on demand
+Before=docker.service
+After=network.target ypbind.service sssd.service
+
+[Service]
+Type=forking
+PIDFile=/run/autofs.pid
+EnvironmentFile=-/etc/sysconfig/autofs
+ExecStart=/usr/sbin/automount $OPTIONS --pid-file /run/autofs.pid
+ExecStartPost=/bin/touch /media/shared/.autofs.service
+ExecReload=/usr/bin/kill -HUP $MAINPID
+TimeoutSec=180
+
+[Install]
+WantedBy=multi-user.target

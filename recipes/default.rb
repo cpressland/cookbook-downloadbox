@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: cpio-downloads-server
+# Cookbook Name:: downloadbox
 # Recipe:: default
 #
 # Copyright (C) 2016 YOUR_NAME
@@ -9,66 +9,51 @@
 
 # --- Attribute Definitions
 
-uservars = node['cpio-downloads-server']['users']
-repovars = node['cpio-downloads-server']['repositories']
-dirvars  = node['cpio-downloads-server']['directories']
-temvars  = node['cpio-downloads-server']['templates']
-fwsvars  = node['firewalld']['firewalld_services']
-fwpvars  = node['firewalld']['firewalld_ports']
+dirvars  = node['downloadbox']['directories']
+temvars  = node['downloadbox']['templates']
+imgvars  = node['docker']['images']
+contvars = node['docker']['containers']
 
-# --- Set SELinux to Disabled, Sonarr does not support it.
+# --- Disable SELinux (I'll learn it one day)
 
 selinux_state "Disable SELinux" do
   action :disabled
 end
 
-# --- Install Required Yum Repo's
+# --- Add user for apps to run under
 
-repovars.each do |createrepos|
-  yum_repository createrepos[:reponame] do
-    description createrepos[:repodescription]
-    baseurl createrepos[:repobaseurl]
-    gpgkey createrepos[:repogpgkey]
-    action :create
-  end
+group 'apps' do
+  gid 1550
+  action :create
 end
 
-# --- Add Required Users
-
-uservars.each do |createusers|
-  group createusers[:name]
-
-  user createusers[:name] do
-    group createusers[:name]
-    home createusers[:home]
-    system false
-    shell '/bin/bash'
-  end
+user 'apps' do
+  uid 1550
+  gid 1550
+  system true
+  shell '/bin/bash'
+  action :create
 end
 
 # --- Install required packages
 
-node['cpio-downloads-server']['packages'].each do |package_name|
+package 'epel-release' do
+  action :install
+end
+
+node['downloadbox']['packages'].each do |package_name|
   package package_name do
     action :install
   end
 end
 
-# --- Update Shell from Bash to Fish on Root User
-
-execute 'Use Fish instead of Bash for Root User' do
-  command "chsh -s /usr/bin/fish root"
-  action :run
-  only_if { node['fish']['replace_bash'] }
-end
-
 # --- Create Directory Structures
 
 dirvars.each do |createdirs|
-  directory createdirs[:dirname] do
-    owner createdirs[:dirowner]
-    group createdirs[:dirgroup]
-    mode createdirs[:dirmode]
+  directory createdirs[:name] do
+    owner 'apps'
+    group 'apps'
+    mode '755'
     action :create
   end
 end
@@ -76,110 +61,69 @@ end
 # --- Deploy Templates
 
 temvars.each do |createtems|
-  template createtems[:temname] do
-    source createtems[:temsource]
-    owner createtems[:temowner]
-    group createtems[:temgroup]
-    mode createtems[:temmode]
+  template createtems[:name] do
+    source createtems[:source]
+    owner createtems[:owner]
+    group createtems[:group]
+    mode createtems[:mode]
   end
 end
 
-# --- Configure FirewallD
+# --- Configure the firewall
 
-service "firewalld" do
-  only_if { node['firewalld']['enable_firewalld'] }
+service 'firewalld' do
   action [:enable, :start]
 end
 
-service "firewalld" do
-  not_if { node['firewalld']['enable_firewalld'] }
-  action [:disable, :stop]
-end
-
-fwpvars.each do |fwpconf|
-  firewalld_port fwpconf[:fwport] do
+node['downloadbox']['firewall_services'].each do |service_name|
+  firewalld_service service_name do
     action :add
-    zone fwpconf[:fwzone]
-    only_if { node['firewalld']['enable_firewalld'] }
+    zone 'public'
   end
 end
 
-fwsvars.each do |fwsconf|
-  firewalld_service fwsconf[:fwservice] do
-    action :add
-    zone fwsconf[:fwzone]
-    only_if { node['firewalld']['enable_firewalld'] }
-  end
-end
+# --- Start AutoFS and Samba before Docker
 
-# --- Enable or Disable SMB
-
-service "smb" do
-  only_if { node['smb']['enable_smb'] }
+service 'autofs' do
   action [:enable, :start]
 end
 
-service "smb" do
-  not_if { node['smb']['enable_smb'] }
-  action [:disable, :stop]
+service 'smb' do
+  action [:enable, :start]
 end
 
-# --- Install NZBGet
+# --- Install Docker and Start it.
 
-execute 'Download NZBGet Installer' do
-  command 'wget -O - http://nzbget.net/info/nzbget-version-linux.json | sed -n "s/^.*stable-download.*: \"\(.*\)\".*/\1/p" | wget --no-check-certificate -i - -O /tmp/nzbget-latest-bin-linux.run'
-  action :run
-  not_if { File.exist?("#{node['cpio-downloads-server']['apps_homedirectory']}/nzbget/nzbget") }
+docker_service 'default' do
+  action [:create, :start]
 end
 
-execute 'Install NZBGet' do
-  command "sh /tmp/nzbget-latest-bin-linux.run --destdir #{node['cpio-downloads-server']['apps_homedirectory']}/nzbget"
-  action :run
-  not_if { File.exist?("#{node['cpio-downloads-server']['apps_homedirectory']}/nzbget/nzbget") }
+group 'docker' do
+  action :modify
+  members 'apps'
+  append true
 end
 
-file '/tmp/nzbget-latest-bin-linux.run' do
-  action :delete
+docker_network 'downloadbox.local' do
+  subnet '10.0.51.0/24'
+  gateway '10.0.51.1'
+  action :create
 end
 
-# --- Install Sonarr
-
-execute 'Download Sonarr Tar File' do
-  command 'wget http://download.sonarr.tv/v2/master/mono/NzbDrone.master.tar.gz -O /tmp/NzbDrone.master.tar.gz'
-  not_if { File.exist?("#{node['cpio-downloads-server']['apps_homedirectory']}/NzbDrone/NzbDrone.exe") }
-  action :run
-end
-
-execute 'Install Sonarr' do
-  command "tar zxf /tmp/NzbDrone.master.tar.gz -C #{node['cpio-downloads-server']['apps_homedirectory']}/"
-  action :run
-  not_if { File.exist?("#{node['cpio-downloads-server']['apps_homedirectory']}/NzbDrone/NzbDrone.exe") }
-end
-
-file '/tmp/NzbDrone.master.tar.gz' do
-  action :delete
-end
-
-# --- Install CouchPotato
-
-git "#{node['cpio-downloads-server']['apps_homedirectory']}/couchpotato" do
-  repository 'https://github.com/RuudBurger/CouchPotatoServer.git'
-  revision 'master'
-  action :sync
-  not_if { File.exist?("#{node['cpio-downloads-server']['apps_homedirectory']}/couchpotato/CouchPotato.py") }
-end
-
-# --- Chown the app user to quickly fix any permissions
-
-execute 'chown apps user' do
-  command "chown -R #{node['cpio-downloads-server']['apps_username']}:#{node['cpio-downloads-server']['apps_username']} #{node['cpio-downloads-server']['apps_homedirectory']}"
-  action :run
-end
-
-# --- Enable Services
-
-node['cpio-downloads-server']['services'].each do |servs|
-  service servs do
-    action :enable
+imgvars.each do |dimages|
+  docker_image dimages[:name] do
+    tag dimages[:tag]
+    action :pull
   end
+end
+
+contvars.each do |containers|
+ docker_container containers[:name] do
+   repo containers[:repo]
+   tag containers[:tag]
+   port containers[:port]
+   network_mode containers[:network_mode]
+   volumes containers[:volumes]
+   restart_policy 'always'
+ end
 end
