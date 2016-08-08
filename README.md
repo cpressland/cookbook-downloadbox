@@ -11,7 +11,7 @@ Cookbook for deploying NZBGet, Sonarr and CouchPotato onto a CentOS Server.
 Deployment on a CentOS Server can be automated by calling the following script:
 
 ```
-curl -L https://raw.githubusercontent.com/cpressland/cpio-downloads-server/master/install.sh | bash
+bash <(curl https://raw.githubusercontent.com/cpressland/cpio-downloads-server/master/install.sh)
 ```
 
 ## Attributes
