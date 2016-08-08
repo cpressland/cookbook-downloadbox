@@ -16,16 +16,16 @@ echo "Now I need to know the path to your content, without the share IP and name
 read -p "What is the path to your TV shows: " tv_path;
 read -p "What is the path to your Movies: " movie_path;
 
-echo "
+echo '
 {
-  'downloadbox': {
-    'share_ip': '$share_ip'
-    'share_name': '$share_name'
-    'tvpath': '/media/shared/$tv_path'
-    'moviepath': '/media/shared/$movie_path'
+  "downloadbox": {
+    "share_ip": "'$share_ip'",
+    "share_name": "'$share_name'",
+    "tvpath": "/media/shared/'$tv_path'",
+    "moviepath": "/media/shared/'$movie_path'"
   },
-  'run_list': [ 'recipe[downloadbox::default]' ]
-}" > /var/chef/node.json
+  "run_list": [ "recipe[downloadbox::default]" ]
+}' > /var/chef/node.json
 
 
 echo '
